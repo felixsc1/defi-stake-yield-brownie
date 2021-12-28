@@ -1,11 +1,16 @@
-from brownie import network, config, accounts, LinkToken, VRFCoordinatorMock, Contract
+from brownie import (network, config, accounts, Contract,
+                     MockDAI, MockWETH, MockV3Aggregator)
 from web3 import Web3
 
 FORKED_LOCAL_ENVIRONMENTS = ['mainnet-fork', 'mainnet-fork-dev']
 LOCAL_BLOCKCHAIN_ENVIRONMENTS = ['development', 'local-ganache']
 
-contract_to_mock = {"vrf_coordinator": VRFCoordinatorMock,
-                    "link_token": LinkToken}
+
+# here we simply use the same price feed for everything. could parameterize this further.
+contract_to_mock = {"eth_usd_price_feed": MockV3Aggregator,
+                    "dai_usd_price_feed": MockV3Aggregator,
+                    "fau_token": MockDAI,
+                    "weth_token": MockWETH}
 
 
 def get_account(index=None, id=None):
@@ -48,22 +53,17 @@ def get_contract(contract_name):
     return contract
 
 
-def deploy_mocks():
+def deploy_mocks(decimals=18, initial_value=2000):
     """
     Use this function if you want to deploy mocks to a local developer chain.
     """
     print("Deploying mocks...")
     account = get_account()
-    link_token = LinkToken.deploy({"from": account})
-    VRFCoordinatorMock.deploy(link_token.address, {"from": account})
+    print("Deploying Mock Price Feed...")
+    mock_price_feed = MockV3Aggregator.deploy(
+        decimals, initial_value, {"from": account})
+    print(f"Deployed to {mock_price_feed.address}")
+    print("Deploying Mock DAI/WETH...")
+    dai_token = MockDAI.deploy({"from": account})
+    weth_token = MockWETH.deploy({"from": account})
     print('Deployed!')
-
-
-def fund_with_link(contract_address, account=None, link_token=None, amount=Web3.toWei(0.3, "ether")):
-    # default amount 0.1Link
-    account = account if account else get_account()
-    link_token = link_token if link_token else get_contract("link_token")
-    tx = link_token.transfer(contract_address, amount, {"from": account})
-    tx.wait(1)
-    print("Funded contract!")
-    return tx
