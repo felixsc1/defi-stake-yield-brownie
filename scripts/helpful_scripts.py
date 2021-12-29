@@ -5,6 +5,7 @@ from web3 import Web3
 FORKED_LOCAL_ENVIRONMENTS = ['mainnet-fork', 'mainnet-fork-dev']
 LOCAL_BLOCKCHAIN_ENVIRONMENTS = ['development', 'local-ganache']
 
+INITIAL_PRICE_FEED_VALUE = 2000000000000000000000
 
 # here we simply use the same price feed for everything. could parameterize this further.
 contract_to_mock = {"eth_usd_price_feed": MockV3Aggregator,
@@ -17,7 +18,7 @@ def get_account(index=None, id=None):
     # accounts[index]
     # accounts.add('id') --> accounts.load('id')
     if index:
-        account = accounts[index]
+        return accounts[index]
     if id:
         return accounts.load[id]
     if (network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS
@@ -53,7 +54,7 @@ def get_contract(contract_name):
     return contract
 
 
-def deploy_mocks(decimals=18, initial_value=2000):
+def deploy_mocks(decimals=18, initial_value=INITIAL_PRICE_FEED_VALUE):
     """
     Use this function if you want to deploy mocks to a local developer chain.
     """
