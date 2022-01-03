@@ -13,4 +13,7 @@ to compute the amount of reward tokens to be issued (**DappToken.sol**).
 The contract keeps track of all balances, so that the owner only has to call *issueTokens()* once, to reward all users.
 
 
-//todo: need to add mocks
+## Frontend
+
+This is also a first introduction into REACT as front end.
+Front end implements components from [useDapp](https://usedapp.readthedocs.io/en/latest/getting-started.html#installation) and uses [MUI](https://mui.com/getting-started/usage/) for styling.
